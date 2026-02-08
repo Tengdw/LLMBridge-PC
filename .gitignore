@@ -1,0 +1,39 @@
+# Binaries
+windows-agent/bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.out
+go.work
+
+# Logs
+*.log
+windows-agent/agent.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Config (keep templates)
+windows-agent/llmbridge-agent.yaml
+!windows-agent/llmbridge-agent.yaml.example
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Build artifacts
+dist/
+build/
