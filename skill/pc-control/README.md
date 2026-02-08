@@ -1,197 +1,197 @@
-# PC Control Skill
+# PC 控制 Skill
 
-Claude Code skill for remotely controlling Windows PCs in your LAN via Wake-on-LAN and HTTP API.
+通过 Wake-on-LAN 和 HTTP API 远程控制局域网内 Windows PC 的 Claude Code skill。
 
-## Features
+## 功能特性
 
-- **Wake-on-LAN**: Wake up sleeping/shutdown PCs
-- **Remote Command Execution**: Run commands on Windows PCs
-- **System Information**: Query PC details (hostname, OS, CPU, memory, IP, MAC)
-- **Power Management**: Shutdown, restart, and sleep operations
-- **Multi-PC Support**: Manage multiple PCs from a single configuration file
+- **Wake-on-LAN**：唤醒休眠/关机的 PC
+- **远程命令执行**：在 Windows PC 上运行命令
+- **系统信息查询**：查询 PC 详细信息（主机名、操作系统、CPU、内存、IP、MAC）
+- **电源管理**：关机、重启和休眠操作
+- **多 PC 支持**：通过单个配置文件管理多台 PC
 
-## Installation
+## 安装
 
-### 1. Install Dependencies
+### 1. 安装依赖
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y netcat-openbsd curl jq
 ```
 
-### 2. Install Skill
+### 2. 安装 Skill
 
 ```bash
-# Copy skill to Claude skills directory
+# 复制 skill 到 Claude skills 目录
 cp -r pc-control ~/.claude/skills/
 
-# Make scripts executable
+# 设置脚本可执行权限
 chmod +x ~/.claude/skills/pc-control/skill.sh
 chmod +x ~/.claude/skills/pc-control/lib/*.sh
 ```
 
-### 3. Configure PCs
+### 3. 配置 PC
 
-Edit `~/.claude/skills/pc-control/config/pcs.md`:
+编辑 `~/.claude/skills/pc-control/config/pcs.md`：
 
 ```bash
 nano ~/.claude/skills/pc-control/config/pcs.md
 ```
 
-**Important**: Change the auth token and add your PCs!
+**重要**：更改认证令牌并添加您的 PC！
 
-### 4. Install Windows Agent
+### 4. 安装 Windows Agent
 
-On each Windows PC:
+在每台 Windows PC 上：
 
-1. Build the agent (from macOS/Linux):
+1. 构建 agent（从 macOS/Linux）：
    ```bash
    cd /Users/tengdw/VSCProject/LLMBridge-PC/windows-agent
    make build-windows
    ```
 
-2. Copy to Windows PC:
+2. 复制到 Windows PC：
    - `bin/windows-agent.exe`
-   - `config.yaml`
+   - `llmbridge-agent.yaml`
    - `install/install.bat`
 
-3. Edit `config.yaml` and set the same auth token
+3. 编辑 `llmbridge-agent.yaml` 并设置相同的认证令牌
 
-4. Run `install.bat` as Administrator
+4. 以管理员身份运行 `install.bat`
 
-5. Enable Wake-on-LAN in BIOS and Windows (see config guide)
+5. 在 BIOS 和 Windows 中启用 Wake-on-LAN（参见配置指南）
 
-## Usage
+## 使用方法
 
-### From Claude Code
+### 从 Claude Code 使用
 
 ```bash
-# List all configured PCs
+# 列出所有配置的 PC
 /pc-control list
 
-# Wake up a PC
+# 唤醒 PC
 /pc-control wake office-pc
 
-# Execute a command
+# 执行命令
 /pc-control exec office-pc "ipconfig /all"
 /pc-control exec gaming-pc "powershell Get-Process" powershell
 
-# Get system information
+# 获取系统信息
 /pc-control info laptop
 
-# Power operations
+# 电源操作
 /pc-control shutdown office-pc
 /pc-control restart gaming-pc
 /pc-control sleep laptop
 
-# Show help
+# 显示帮助
 /pc-control help
 ```
 
-### Natural Language with Claude
+### 使用自然语言与 Claude 交互
 
-You can also use natural language:
+您也可以使用自然语言：
 
-- "Wake up my office PC"
-- "Run ipconfig on the gaming PC"
-- "Shutdown the laptop"
-- "What's the IP address of my office PC?"
+- "唤醒我的办公室 PC"
+- "在游戏 PC 上运行 ipconfig"
+- "关闭笔记本电脑"
+- "我的办公室 PC 的 IP 地址是什么？"
 
-Claude will translate these to the appropriate skill commands.
+Claude 会将这些转换为相应的 skill 命令。
 
-## Configuration
+## 配置
 
-### PC Configuration Format
+### PC 配置格式
 
-Edit `config/pcs.md`:
+编辑 `config/pcs.md`：
 
 ```markdown
 ### pc-alias
-- **Alias**: pc-alias
+- **别名**: pc-alias
 - **IP**: 192.168.1.100
 - **MAC**: AA:BB:CC:DD:EE:FF
-- **Description**: Description of the PC
-- **Status**: active
+- **描述**: PC 的描述信息
+- **状态**: active
 ```
 
-### Global Settings
+### 全局设置
 
 ```markdown
-## Global Settings
+## 全局设置
 
-- **Auth Token**: your-strong-random-token
-- **Agent Port**: 8888
-- **Default Timeout**: 30
-- **WOL Port**: 9
+- **认证令牌**: your-strong-random-token
+- **Agent 端口**: 8888
+- **默认超时**: 30
+- **WOL 端口**: 9
 ```
 
-### Generate Auth Token
+### 生成认证令牌
 
 ```bash
 openssl rand -hex 32
 ```
 
-Use the same token in:
+在以下两处使用相同的令牌：
 - `~/.claude/skills/pc-control/config/pcs.md`
-- `C:\LLMBridge\config.yaml` (on each Windows PC)
+- `C:\LLMBridge\llmbridge-agent.yaml`（在每台 Windows PC 上）
 
-## Troubleshooting
+## 故障排查
 
-### Wake-on-LAN Not Working
+### Wake-on-LAN 不工作
 
-1. Check BIOS/UEFI settings - WOL must be enabled
-2. Check Windows network adapter settings
-3. Disable Windows Fast Startup
-4. Use wired Ethernet connection (not WiFi)
-5. Verify MAC address is correct
+1. 检查 BIOS/UEFI 设置 - 必须启用 WOL
+2. 检查 Windows 网络适配器设置
+3. 禁用 Windows 快速启动
+4. 使用有线以太网连接（非 WiFi）
+5. 验证 MAC 地址正确
 
-### Agent Not Reachable
+### Agent 无法访问
 
-1. Check if agent service is running:
+1. 检查 agent 服务是否运行：
    ```cmd
    sc query LLMBridgeAgent
    ```
 
-2. Check Windows Firewall allows port 8888
+2. 检查 Windows 防火墙是否允许端口 8888
 
-3. Verify IP address is correct and PC is on network
+3. 验证 IP 地址正确且 PC 在网络上
 
-4. Test from Windows PC itself:
+4. 从 Windows PC 本身测试：
    ```cmd
    curl http://localhost:8888/health
    ```
 
-### Authentication Fails
+### 认证失败
 
-1. Verify token matches in both config files
-2. Check for extra spaces or newlines in token
-3. Ensure token is not the default value
+1. 验证两个配置文件中的令牌匹配
+2. 检查令牌中是否有额外的空格或换行符
+3. 确保令牌不是默认值
 
-### Command Execution Fails
+### 命令执行失败
 
-1. Check if command is blocked by security rules
-2. Verify timeout is sufficient for long-running commands
-3. Check command syntax for the specified shell (cmd vs powershell)
-4. Review agent logs: `C:\LLMBridge\agent.log`
+1. 检查命令是否被安全规则阻止
+2. 验证超时时间是否足够长
+3. 检查指定 shell（cmd vs powershell）的命令语法
+4. 查看 agent 日志：`C:\LLMBridge\agent.log`
 
-## Security
+## 安全
 
-- **LAN Only**: This system is designed for local network use only
-- **Change Default Token**: Always use a strong random token
-- **Static IPs**: Use static IP addresses for reliability
-- **Firewall**: Windows Firewall limits access to port 8888
-- **Command Blacklist**: Dangerous commands are blocked by the agent
-- **Logging**: All commands are logged on the Windows agent
+- **仅限局域网**：此系统仅设计用于本地网络使用
+- **更改默认令牌**：始终使用强随机令牌
+- **静态 IP**：使用静态 IP 地址以确保可靠性
+- **防火墙**：Windows 防火墙限制对端口 8888 的访问
+- **命令黑名单**：agent 会阻止危险命令
+- **日志记录**：所有命令都记录在 Windows agent 上
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────────────────────────────┐
 │     Debian (Claude Code)            │
 │  ┌──────────────────────────────┐   │
 │  │   pc-control skill           │   │
-│  │   - WOL sender               │   │
-│  │   - HTTP client              │   │
+│  │   - WOL 发送器               │   │
+│  │   - HTTP 客户端              │   │
 │  └──────────────────────────────┘   │
 └─────────────────┬───────────────────┘
                   │ LAN
@@ -204,6 +204,6 @@ Use the same token in:
 └──────────┘ └─────────┘ └──────────┘
 ```
 
-## License
+## 许可证
 
 MIT License
