@@ -11,8 +11,12 @@ parse_pc_config() {
         return 1
     fi
 
-    # Extract PC section
-    local section=$(awk "/### $alias\$/,/^###/" "$config_file" | grep -v "^###")
+    # Extract PC section (exact heading match; supports Chinese/special chars in alias)
+    local section=$(awk -v alias="$alias" '
+        $0 == "### " alias { in_section=1; next }
+        in_section && /^### / { in_section=0 }
+        in_section { print }
+    ' "$config_file")
 
     if [ -z "$section" ]; then
         log_error "PC '$alias' not found in config"
