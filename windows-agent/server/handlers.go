@@ -109,12 +109,12 @@ func (h *Handler) Power(c *gin.Context) {
 	switch req.Action {
 	case "shutdown":
 		if runtime.GOOS == "windows" {
-			// Use hybrid shutdown (Fast Startup) - Windows default behavior
-			cmd = exec.Command("shutdown", "/s", "/hybrid", "/t", "0")
+			// Use normal shutdown and let Windows apply system default behavior.
+			cmd = exec.Command("shutdown", "/s", "/t", "0")
 		} else {
 			cmd = exec.Command("shutdown", "-h", "now")
 		}
-		message = "System will shutdown now (Fast Startup)"
+		message = "System will shutdown now"
 
 	case "restart":
 		if runtime.GOOS == "windows" {
